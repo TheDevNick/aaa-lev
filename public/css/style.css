@@ -7,3 +7,7 @@
 p {
     margin-block: 10px !important;
 }
+
+.fa-small {
+    font-size: 16px !important;
+}
