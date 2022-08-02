@@ -77,7 +77,7 @@ router.put('/:id', ensureAuth, async (req, res) => {
                 runValidators: true //this makes sure the mongoose fields are valid
             })
 
-        res.redirect('/')
+        res.redirect('/')//go home
     }
 })
 
