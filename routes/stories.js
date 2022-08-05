@@ -40,47 +40,90 @@ router.get('/', ensureAuth, async (req, res) => {
     }
 })
 
+// @desc     Show single story
+// @route    GET /stories/:id
+router.get('/:id', ensureAuth, async (req, res) => {
+    try {
+        let event = await Event.findById(req.params.id)
+            .populate('user')
+            .lean()
+        
+            if(!event) {
+                res.render('error/404')
+            }
+            
+            res.render('stories/show', {
+                event
+            })
+        } catch (error) {
+            console.error(error)
+            res.render('error/404')
+    }
+})
+
 // @desc     Show edit page
 // @route    GET /stories/edit/:id
 router.get('/edit/:id', ensureAuth, async (req, res) => {
-    const event = await Event.findOne({_id: req.params.id}).lean()
-
-    // check to see if the event is there
-    if(!event) {
-        return res.render('error/404')
-    }
-
-    // redirect if not the event owner
-    if(event.user != req.user.id) {
-        res.redirect('/stories')
-    } else {
-        res.render('stories/edit', {
-            event,
-        })
+    try{
+        const event = await Event.findOne({_id: req.params.id}).lean()
+    
+        // check to see if the event is there
+        if(!event) {
+            return res.render('error/404')
+        }
+    
+        // redirect if not the event owner
+        if(event.user != req.user.id) {
+            res.redirect('/stories')
+        } else {
+            res.render('stories/edit', {
+                event,
+            })
+        }
+    } catch (error) {
+        console.error(error)
+        res.render('error/500')
     }
 })
 
 // @desc     update event
 // @route    PUT /stories/:id
 router.put('/:id', ensureAuth, async (req, res) => {
-    let event = await Event.findById(req.params.id).lean()
-
-    if (!event) {
-        return res.render('error/404')
-    }
-
-    if(event.user != req.user.id) {
-        res.redirect('/stories')
-    } else {
-            event = await Event.findOneAndUpdate({ _id: req.params.id }, req.body, {
-                new: true,
-                runValidators: true //this makes sure the mongoose fields are valid
-            })
-
-        res.redirect('/')//go home
+    try {
+        let event = await Event.findById(req.params.id).lean()
+    
+        if (!event) {
+            return res.render('error/404')
+        }
+    
+        if(event.user != req.user.id) {
+            res.redirect('/stories')
+        } else {
+                event = await Event.findOneAndUpdate({ _id: req.params.id }, req.body, {
+                    new: true,
+                    runValidators: true //this makes sure the mongoose fields are valid
+                })
+    
+            res.redirect('/')//go home
+        }
+    } catch (error) {
+        console.error(error)
+        res.render('error/500')
     }
 })
 
+
+// @desc     delete event
+// @route    DELETE /stories/:id
+router.delete('/:id', ensureAuth, async (req, res) => {
+    try {
+        await Event.remove({ _id: req.params.id })
+        res.redirect('/dashboard')
+    } catch (error) {
+        console.error(error)
+        res.render('error/500')
+    }
+})
 
 
 
