@@ -1,3 +1,5 @@
+
+// this will make sure users are only seeing the things they are supposed to 
 module.exports =  {
     ensureAuth: function (req, res, next) {
         if (req.isAuthenticated()) {
@@ -14,3 +16,4 @@ module.exports =  {
         }
     }
 }
+
